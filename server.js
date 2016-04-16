@@ -1,7 +1,11 @@
 // Get the packages we need
 var express = require('express');
 var mongoose = require('mongoose');
-var Llama = require('./models/llama');
+
+var Artist = require('./models/artist');
+var Song = require('./models/song');
+var User = require('./models/user');
+
 var bodyParser = require('body-parser');
 var router = express.Router();
 
@@ -34,17 +38,108 @@ app.use('/api', router);
 var homeRoute = router.route('/');
 
 homeRoute.get(function(req, res) {
-  res.json({ message: 'Hello World!' });
+  res.json({ message: 'death-of-pablo-api' });
 });
 
-//Llama route
-var llamaRoute = router.route('/llamas');
+function parse(objString) {
+  return eval('('+objString+')');
+}
+function setQuery(mongoQuery, urlQuery) {
+  mongoQuery.find(parse(urlQuery.where));
+  mongoQuery.sort(parse(urlQuery.sort));
+  mongoQuery.select(parse(urlQuery.select));
+  mongoQuery.skip(urlQuery.skip);
+  mongoQuery.limit(urlQuery.limit);
+  if(parse(urlQuery.count) === true)
+    mongoQuery.count(parse(urlQuery.count));
+}
 
-llamaRoute.get(function(req, res) {
-  res.json([{ "name": "alice", "height": 12 }, { "name": "jane", "height": 13 }]);
+//Routes
+var userRoute = router.route('/user/');
+var userIDRoute = router.route('/user/:userid');
+var songRoute = router.route('/songs');
+var artistRoute = router.route('/artists');
+
+//Route methods
+songRoute.get(function(req, res) {
+  var query = Song.find();
+  setQuery(query, req.query);
+  query.exec(function(err, songs) {
+    if(err) {
+      res.status(500);
+      res.json({ message:'Error retrieving songs' });
+    }
+    else
+      res.json({ message:'OK', data:songs });
+  });
 });
 
-//Add more routes here
+artistRoute.get(function(req, res) {
+  var query = Artist.find();
+  setQuery(query, req.query);
+  query.exec(function(err, artists) {
+    if(err) {
+      res.status(500);
+      res.json({ message:'Error retrieving artists' });
+    }
+    else
+      res.json({ message:'OK', data:artists });
+  });
+});
+
+userRoute.post(function(req, res) {
+  User.create(function(err, user) {
+    if(err) {
+      res.status(500);
+      res.json({ message:'Error creating user'});
+    }
+    else {
+      res.status(201);
+      res.json({ message:'OK', data:[] });
+    }
+  });
+});
+userIDRoute.get(function(req, res) {
+  User.findById(req.params.userid,
+    function(err, user){
+      if(err) {
+        res.status(500);
+        res.json({ message:'Error retrieving user' });
+      }
+      else if(user == null) {
+        res.status(404);
+        res.json({ message:'User does not exist' });
+      }
+      else
+        res.json({ message:'OK', data:user });
+    });
+});
+userIDRoute.put(function(req, res) {
+  User.findByIdAndUpdate(req.params.userid, req.body,
+    function(err, user) {
+      if(err) {
+        res.status(500);
+        res.json({ message:'Error updating user' });
+      }
+      else
+        res.json({ message:'OK', data:user });
+    });
+});
+userIDRoute.delete(function(req, res) {
+  User.findByIdAndRemove(req.params.userid,
+    function(err, details) {
+      if(err) {
+        res.status(500);
+        res.json({ message:'Error deleting user' });
+      }
+      else if(details.result.n == 0) {
+        res.status(404);
+        res.json({ message:'User not found' });
+      }
+      else
+        res.json({ message: 'OK' });
+    });
+});
 
 // Start the server
 app.listen(port);
