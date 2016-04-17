@@ -1,8 +1,38 @@
-# Demo server code for MP4
-You should be able to do
-`npm install` and `nodemon server.js`
+# Schema
+Artist {
+  name:    String   // Artist name
+  songIDs: [String] // IDs referring to the artist's songs
+}
 
-Nodemon does auto-reloading the same way grunt does on the frontend.
+Song {
+  title:     String    // Song title
+  lyrics:    String    // Song lyrics
+  artistIDs: [String]  // IDs referring to the song's artists
+}
 
-You might have to install nodemon on the vagrant machine using
-`npm install -g nodemon`
+User {
+  username:     String,  // Username
+  passwordHash: [String] // 
+  favSongIDs:   [String] // IDs referring to user's favourited songs
+  favArtistIDs: [String] // IDs referring to user's favourited artists
+}
+
+## GET queries supported for songs and artists
+where
+count
+skip
+limit
+sort
+select
+
+/songs
+ GET
+
+/artists
+ GET
+
+/users/:userid
+ GET     Get user details
+ POST    Create a new user
+ PUT     Edit existing user
+ DELETE  Delete user
