@@ -1,31 +1,31 @@
 # Schema
 Artist {
-  name:    String   // Artist name
-  songIDs: [String] // IDs referring to the artist's songs
+  name:    String   // Artist name \n
+  songIDs: [String] // IDs referring to the artist's songs \n
 }
 
 Song {
-  title:     String    // Song title
-  lyrics:    String    // Song lyrics
-  artistIDs: [String]  // IDs referring to the song's artists
+  title:     String    // Song title \n
+  lyrics:    String    // Song lyrics \n
+  artistIDs: [String]  // IDs referring to the song's artists \n
 }
 
 User {
-  username:     String,  // Username
-  passwordHash: [String] // 
-  favSongIDs:   [String] // IDs referring to user's favourited songs
-  favArtistIDs: [String] // IDs referring to user's favourited artists
+  username:     String,  // Username \n
+  passwordHash: [String] // \n
+  favSongIDs:   [String] // IDs referring to user's favourited songs \n
+  favArtistIDs: [String] // IDs referring to user's favourited artists \n
 }
 
 ## GET queries supported for songs and artists
-where
-count
-skip
-limit
-sort
-select
+where \n
+count \n
+skip \n
+limit \n
+sort \n
+select \n
 
-/songs
+/songs \n
  GET
 
 /artists
