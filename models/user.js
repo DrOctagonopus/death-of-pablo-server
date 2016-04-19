@@ -5,6 +5,8 @@ var UserSchema = new mongoose.Schema({
   passwordHash: [String],
   favSongIDs:   [String],
   favArtistIDs: [String],
+  favAlbumIDs: [String],
+  aboutMe: String
 });
 
 module.exports = mongoose.model('User', UserSchema);
