@@ -61,6 +61,38 @@ var userIDRoute = router.route('/user/:userid');
 var songRoute = router.route('/songs');
 var artistRoute = router.route('/artists');
 
+function calculateRank(lyrics) {
+  return Math.floor((Math.random() * 100) + 1);
+}
+
+function calculateScore(lyrics) {
+  return Math.floor((Math.random() * 100) + 1);
+}
+
+function calculateRhymesPerVerse(lyrics) {
+  return Math.floor((Math.random() * 20) + 1);
+}
+
+function calculateVocabLevel(lyrics) {
+  return Math.floor((Math.random() * 12) + 1);
+}
+
+function assembleSong(songParams) {
+  var lyrics = songParams.lyrics;
+
+  return {
+    "title": songParams.title,
+    "lyrics": lyrics,
+    // CHANGE THIS WHEN FRONTEND ALLOWS >1 artist
+    "artistIds": [songParams.artistId],
+    "albumId": songParams.albumId,
+    "rank": calculateRank(lyrics),
+    "score": calculateScore(lyrics),
+    "rhymesPerVerse": calculateRhymesPerVerse(lyrics),
+    "vocabLevel": calculateVocabLevel(lyrics)
+  };
+}
+
 //Route methods
 songRoute.get(function(req, res) {
   var query = Song.find();
@@ -74,8 +106,11 @@ songRoute.get(function(req, res) {
       res.json({ message:'OK', data:songs });
   });
 });
+
 songRoute.post(function(req, res) {
-  Song.create(function(err, user) {
+  var tempSong = assembleSong(req.body);
+
+  Song.create(tempSong, function(err, user) {
     if(err) {
       res.status(500);
       res.json({ message:'Error creating song.'});
@@ -86,6 +121,7 @@ songRoute.post(function(req, res) {
     }
   });
 });
+
 songRoute.delete(function(req, res) {
   Song.findByIdAndRemove(req.params.userid, req.body,
     function(err, song) {
