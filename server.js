@@ -44,6 +44,7 @@ homeRoute.get(function(req, res) {
 function parse(objString) {
   return eval('('+objString+')');
 }
+
 function setQuery(mongoQuery, urlQuery) {
   mongoQuery.find(parse(urlQuery.where));
   mongoQuery.sort(parse(urlQuery.sort));
@@ -73,7 +74,30 @@ songRoute.get(function(req, res) {
       res.json({ message:'OK', data:songs });
   });
 });
-
+songRoute.post(function(req, res) {
+  Song.create(function(err, user) {
+    if(err) {
+      res.status(500);
+      res.json({ message:'Error creating song.'});
+    }
+    else {
+      res.status(201);
+      res.json({ message:'OK', data:[] });
+    }
+  });
+});
+songRoute.delete(function(req, res) {
+  Song.findByIdAndRemove(req.params.userid, req.body,
+    function(err, song) {
+      if (err) {
+        res.status(500);
+        res.json({ message: "Error removing song." });
+      } else {
+        res.status(200);
+        res.json({ message: "Successful delete." });
+      }
+    })
+})
 artistRoute.get(function(req, res) {
   var query = Artist.find();
   setQuery(query, req.query);
@@ -140,6 +164,8 @@ userIDRoute.delete(function(req, res) {
         res.json({ message: 'OK' });
     });
 });
+
+
 
 // Start the server
 app.listen(port);
