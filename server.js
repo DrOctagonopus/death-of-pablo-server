@@ -10,7 +10,7 @@ var bodyParser = require('body-parser');
 var router = express.Router();
 
 //replace this with your Mongolab URL
-mongoose.connect('mongodb://localhost/mp4');
+mongoose.connect('mongodb://pablo:picasso@ds041150.mlab.com:41150/death-of-pablo');
 
 // Create our Express application
 var app = express();
