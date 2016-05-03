@@ -60,6 +60,7 @@ var userRoute = router.route('/user/');
 var userIDRoute = router.route('/user/:userid');
 var songRoute = router.route('/songs');
 var artistRoute = router.route('/artists');
+var userLoginRoute = router.route('/userlogin');
 
 function calculateRank(lyrics) {
   return Math.floor((Math.random() * 100) + 1);
@@ -75,6 +76,10 @@ function calculateRhymesPerVerse(lyrics) {
 
 function calculateVocabLevel(lyrics) {
   return Math.floor((Math.random() * 12) + 1);
+}
+
+function hash(value) {
+  return value;
 }
 
 function assembleSong(songParams) {
@@ -185,6 +190,28 @@ userRoute.post(function(req, res) {
   });
 });
 
+userLoginRoute.get(function(req, res) {
+  User.findOne({username: req.query.username},
+    function(err, user) {
+      if(err) {
+        res.status(500);
+        res.json({ message:'Error' });
+      }
+      else if(user != null) {
+        if(hash(req.query.password) != user.passwordHash) {
+          res.status(404);
+          res.json({ message:'Username or password incorrect' });
+        }
+        else
+          res.json({ message: 'OK', data:user});
+      }
+      else {
+        res.status(404);
+        res.json({ message:'Username or password incorrect' });
+      }
+    }
+  );
+});
 userIDRoute.get(function(req, res) {
   User.findById(req.params.userid,
     function(err, user){
