@@ -196,7 +196,7 @@ artistIdRoute.put(function(req, res) {
   var songIds = req.body.songIds.split(",");
 
   Artist.findByIdAndUpdate(artistId,
-    {$push: {"songIds": {$each: songIds}}}, function(err, artist) {
+    {$addToSet: {"songIds": {$each: songIds}}}, function(err, artist) {
       if (err) {
         res.status(500);
         res.json({message: "Error updating artist."});
