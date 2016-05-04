@@ -60,7 +60,6 @@ var userRoute = router.route('/user/');
 var userIDRoute = router.route('/user/:userid');
 var songRoute = router.route('/songs');
 var artistRoute = router.route('/artists');
-var userLoginRoute = router.route('/userlogin');
 
 function calculateRank(lyrics) {
   return Math.floor((Math.random() * 100) + 1);
@@ -164,7 +163,7 @@ userRoute.post(function(req, res) {
     }
   });
 });
-userLoginRoute.get(function(req, res) {
+userRoute.get(function(req, res) {
   User.findOne({username: req.query.username},
     function(err, user) {
       if(err) {
