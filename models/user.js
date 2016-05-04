@@ -1,8 +1,8 @@
 var mongoose = require('mongoose');
 
 var UserSchema = new mongoose.Schema({
-  username:     String,
-  passwordHash: [String],
+  username:     {type: String, required:true, unique:true},
+  passwordHash: {type: String, required:true},
   favSongIds:   [String],
   favArtistIds: [String],
   //favAlbumIDs:  [String],
