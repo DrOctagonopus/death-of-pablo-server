@@ -214,7 +214,7 @@ userRoute.post(function(req, res) {
     favSongIds: [],
     favArtistIds: [],
     aboutMe: '',
-    thumbnailUrl: req.body.thumbnailUrl != undefined ? thumbnailUrl : ''
+    thumbnailUrl: req.body.thumbnailUrl != undefined ? req.query.thumbnailUrl : ''
   };
   User.create(
     newUser,
