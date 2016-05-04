@@ -4,7 +4,6 @@ var SongSchema = new mongoose.Schema({
   title:     String,
   lyrics:    String,
   artistIds: [String],
-  //albumId: String,
   rank:       Number,
   score:      Number,
   rapDensity: Number,
