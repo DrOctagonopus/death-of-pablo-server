@@ -201,7 +201,7 @@ userRoute.post(function(req, res) {
     }
     else {
       res.status(201);
-      res.json({ message:'OK', data:[] });
+      res.json({ message:'OK', data:[user] });
     }
   });
 });
