@@ -21,6 +21,7 @@ var port = process.env.PORT || 4000;
 //Allow CORS so that backend and frontend could pe put on different servers
 var allowCrossDomain = function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
   res.header("Access-Control-Allow-Headers", "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept");
   next();
 };
@@ -30,6 +31,7 @@ app.use(allowCrossDomain);
 app.use(bodyParser.urlencoded({
   extended: true
 }));
+app.use(bodyParser.json());
 
 // All our routes will start with /api
 app.use('/api', router);
@@ -200,7 +202,7 @@ userRoute.post(function(req, res) {
     favSongIds: [],
     favArtistIds: [],
     aboutMe: '',
-    thumbnailUrl: req.body.thumbnailUrl != undefined ? thumbnailUrl : ''
+    thumbnailUrl: req.body.thumbnailUrl != undefined ? req.body.thumbnailUrl : ''
   };
   User.create(
     newUser,
@@ -216,6 +218,7 @@ userRoute.post(function(req, res) {
   });
 });
 userRoute.get(function(req, res) {
+  //console.log(req.query);
   User.findOne({username: req.query.username},
     function(err, user) {
       if(err) {
