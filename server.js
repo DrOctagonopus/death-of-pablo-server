@@ -60,6 +60,7 @@ var userRoute = router.route('/user/');
 var userIDRoute = router.route('/user/:userid');
 var songRoute = router.route('/songs');
 var artistRoute = router.route('/artists');
+var artistIdRoute = router.route('/artists/:id');
 
 function calculateRank(lyrics) {
   return Math.floor((Math.random() * 100) + 1);
@@ -128,8 +129,8 @@ songRoute.post(function(req, res) {
     if(err) {
       res.status(500);
       res.json({ message:'Error creating song.'});
-    }
-    else {
+    } else {
+      // Have to update artist once song is added because a song belongs to an artist.
       res.status(201);
       res.json({ message:'OK', data:[song] });
     }
@@ -174,6 +175,22 @@ artistRoute.post(function(req, res) {
       res.json({ message: "Successful artist creation.", data: [artist] });
     }
   });
+});
+
+artistIdRoute.put(function(req, res) {
+  var artistId = req.params.id;
+  var songIds = req.body.songIds.split(",");
+
+  Artist.findByIdAndUpdate(artistId,
+    {$push: {"songIds": {$each: songIds}}}, function(err, artist) {
+      if (err) {
+        res.status(500);
+        res.json({message: "Error updating artist."});
+      } else {
+        res.status(200);
+        res.json({message: "Successful updating of artist.", data: []});
+      }
+    });
 });
 
 userRoute.post(function(req, res) {
