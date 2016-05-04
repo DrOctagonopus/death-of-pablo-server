@@ -124,14 +124,14 @@ songRoute.get(function(req, res) {
 songRoute.post(function(req, res) {
   var tempSong = assembleSong(req.body);
 
-  Song.create(tempSong, function(err) {
+  Song.create(tempSong, function(err, song) {
     if(err) {
       res.status(500);
       res.json({ message:'Error creating song.'});
     }
     else {
       res.status(201);
-      res.json({ message:'OK', data:[] });
+      res.json({ message:'OK', data:[song] });
     }
   });
 });
