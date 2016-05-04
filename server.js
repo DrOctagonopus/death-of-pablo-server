@@ -61,6 +61,7 @@ function setQuery(mongoQuery, urlQuery) {
 var userRoute = router.route('/user/');
 var userIDRoute = router.route('/user/:userid');
 var songRoute = router.route('/songs');
+var populationSongRoute = router.route('/populate/songs');
 var artistRoute = router.route('/artists');
 var artistIdRoute = router.route('/artists/:id');
 
@@ -90,9 +91,7 @@ function assembleSong(songParams) {
   return {
     "title": songParams.title,
     "lyrics": lyrics,
-    // CHANGE THIS WHEN FRONTEND ALLOWS >1 artist
-    "artistIds": [songParams.artistId],
-    "albumId": songParams.albumId,
+    "artistIds": songParams.artistIds.split(","),
     "rank": calculateRank(lyrics),
     "score": calculateScore(lyrics),
     "rhymesPerVerse": calculateRhymesPerVerse(lyrics),
@@ -130,11 +129,53 @@ songRoute.post(function(req, res) {
   Song.create(tempSong, function(err, song) {
     if(err) {
       res.status(500);
-      res.json({ message:'Error creating song.'});
+      res.json({ message:'Error creating song.' });
     } else {
       // Have to update artist once song is added because a song belongs to an artist.
+      var songId = song._id;
+      console.log(songId);
+      var artistIds = req.body.artistIds.split(",");
+
+      Artist.update({ _id: { $in: artistIds } },
+        { $addToSet: { "songIds": songId } },
+        { multi: true },
+        function(err, artist) {
+          if (err) {
+            res.status(500);
+            res.json({message: "Error updating artist."});
+          }
+      });
+
       res.status(201);
-      res.json({ message:'OK', data:[song] });
+      res.json({message: "OK", data: [song]});
+    }
+  });
+});
+
+populationSongRoute.post(function(req, res) {
+  var tempSong = req.body;
+
+  Song.create(tempSong, function(err, song) {
+    if(err) {
+      res.status(500);
+      res.json({ message:'Error creating song.' });
+    } else {
+      // Have to update artist once song is added because a song belongs to an artist.
+      var songId = song._id;
+      var artistIds = req.body.artistIds;
+
+      Artist.update({ _id: { $in: artistIds } },
+        { $addToSet: { "songIds": songId } },
+        { multi: true },
+        function(err, artist) {
+          if (err) {
+            res.status(500);
+            res.json({message: "Error updating artist."});
+          }
+      });
+
+      res.status(201);
+      res.json({message: "OK", data: [song]});
     }
   });
 });
@@ -179,12 +220,26 @@ artistRoute.post(function(req, res) {
   });
 });
 
+artistIdRoute.get(function(req, res) {
+  var artistId = req.params.id;
+
+  Artist.findById(artistId, function(err, artist) {
+    if (err) {
+      res.status(500);
+      res.json({ message: "Error finding artist." });
+    } else {
+      res.status(200);
+      res.json({ message: "Success finding artist.", data: [artist] });
+    }
+  });
+});
+
 artistIdRoute.put(function(req, res) {
   var artistId = req.params.id;
   var songIds = req.body.songIds.split(",");
 
   Artist.findByIdAndUpdate(artistId,
-    {$push: {"songIds": {$each: songIds}}}, function(err, artist) {
+    {$addToSet: {"songIds": {$each: songIds}}}, function(err, artist) {
       if (err) {
         res.status(500);
         res.json({message: "Error updating artist."});
