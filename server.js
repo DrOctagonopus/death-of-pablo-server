@@ -97,6 +97,16 @@ function assembleSong(songParams) {
   };
 }
 
+function assembleArtist(artistParams) {
+  console.log(artistParams);
+
+  return {
+    "name": artistParams.name,
+    "description": artistParams.description,
+    "songIds": artistParams.songIds.split(",")
+  };
+}
+
 //Route methods
 songRoute.get(function(req, res) {
   var query = Song.find();
@@ -114,7 +124,7 @@ songRoute.get(function(req, res) {
 songRoute.post(function(req, res) {
   var tempSong = assembleSong(req.body);
 
-  Song.create(tempSong, function(err, user) {
+  Song.create(tempSong, function(err) {
     if(err) {
       res.status(500);
       res.json({ message:'Error creating song.'});
@@ -138,6 +148,7 @@ songRoute.delete(function(req, res) {
       }
     })
 })
+
 artistRoute.get(function(req, res) {
   var query = Artist.find();
   setQuery(query, req.query);
@@ -148,6 +159,20 @@ artistRoute.get(function(req, res) {
     }
     else
       res.json({ message:'OK', data:artists });
+  });
+});
+
+artistRoute.post(function(req, res) {
+  var tempArtist = assembleArtist(req.body);
+
+  Artist.create(tempArtist, function(err, artist) {
+    if (err) {
+      res.status(500);
+      res.json({ message: "Error creating artist." });
+    } else {
+      res.status(200);
+      res.json({ message: "Successful artist creation.", data: [artist] });
+    }
   });
 });
 
