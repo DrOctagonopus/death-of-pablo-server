@@ -105,7 +105,7 @@ function assembleArtist(artistParams) {
   return {
     "name": artistParams.name,
     "description": artistParams.description,
-    "songIds": artistParams.songIds.split(",")
+    "songIds": typeof(artistParams.songIds) !== "undefined" ? artistParams.songIds.split(",") : [] 
   };
 }
 
@@ -142,7 +142,7 @@ songRoute.post(function(req, res) {
         function(err, artist) {
           if (err) {
             res.status(500);
-            res.json({message: "Error updating artist."});
+            res.json({ message: "Error updating artist." });
           }
       });
 
@@ -162,7 +162,8 @@ populationSongRoute.post(function(req, res) {
     } else {
       // Have to update artist once song is added because a song belongs to an artist.
       var songId = song._id;
-      var artistIds = req.body.artistIds;
+      console.log(songId);
+      var artistIds = req.body.artistIds.split(",");
 
       Artist.update({ _id: { $in: artistIds } },
         { $addToSet: { "songIds": songId } },
@@ -170,7 +171,7 @@ populationSongRoute.post(function(req, res) {
         function(err, artist) {
           if (err) {
             res.status(500);
-            res.json({message: "Error updating artist."});
+            res.json({ message: "Error updating artist." });
           }
       });
 
