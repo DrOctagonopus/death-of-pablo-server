@@ -5,7 +5,6 @@ var UserSchema = new mongoose.Schema({
   passwordHash: {type: String, required:true},
   favSongIds:   [String],
   favArtistIds: [String],
-  //favAlbumIDs:  [String],
   aboutMe:      String,
   thumbnailUrl: String
 });

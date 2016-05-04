@@ -103,7 +103,7 @@ function assembleArtist(artistParams) {
   return {
     "name": artistParams.name,
     "description": artistParams.description,
-    "songIds": artistParams.songIds.split(",")
+    "songIds": typeof(artistParams.songIds) !== "undefined" ? artistParams.songIds.split(",") : [] 
   };
 }
 
