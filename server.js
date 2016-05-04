@@ -177,6 +177,20 @@ artistRoute.post(function(req, res) {
   });
 });
 
+artistIdRoute.get(function(req, res) {
+  var artistId = req.params.id;
+
+  Artist.findById(artistId, function(err, artist) {
+    if (err) {
+      res.status(500);
+      res.json({ message: "Error finding artist." });
+    } else {
+      res.status(200);
+      res.json({ message: "Success finding artist.", data: [artist] });
+    }
+  });
+});
+
 artistIdRoute.put(function(req, res) {
   var artistId = req.params.id;
   var songIds = req.body.songIds.split(",");
