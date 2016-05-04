@@ -208,14 +208,24 @@ artistIdRoute.put(function(req, res) {
 });
 
 userRoute.post(function(req, res) {
-  User.create(function(err, user) {
+  var newUser = {
+    username: req.body.username,
+    passwordHash: hash(req.body.password),
+    favSongIds: [],
+    favArtistIds: [],
+    aboutMe: '',
+    thumbnailUrl: req.body.thumbnailUrl != undefined ? thumbnailUrl : ''
+  };
+  User.create(
+    newUser,
+    function(err, user) {
     if(err) {
       res.status(500);
-      res.json({ message:'Error creating user'});
+      res.json({ message:err });
     }
     else {
       res.status(201);
-      res.json({ message:'OK', data:[user] });
+      res.json({ message:'OK', data:user });
     }
   });
 });
