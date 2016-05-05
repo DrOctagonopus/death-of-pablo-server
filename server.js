@@ -61,7 +61,8 @@ function setQuery(mongoQuery, urlQuery) {
 var userRoute = router.route('/user/');
 var userIDRoute = router.route('/user/:userid');
 var songRoute = router.route('/songs');
-var populationSongRoute = router.route('/populate/songs');
+var populateSongsRoute = router.route('/populate/songs');
+var populateArtistsRoute = router.route('/populate/artists');
 var artistRoute = router.route('/artists');
 var artistIdRoute = router.route('/artists/:id');
 
@@ -110,7 +111,7 @@ function assembleArtist(artistParams) {
 }
 
 //Route methods
-populationSongRoute.post(function(req, res) {
+populateSongsRoute.post(function(req, res) {
   var tempSong = req.body;
 
   Song.create(tempSong, function(err, song) {
@@ -138,16 +139,40 @@ populationSongRoute.post(function(req, res) {
     }
   });
 });
-populationSongRoute.delete(function(req, res) {
+populateSongsRoute.delete(function(req, res) {
   Song.remove({}, function(err) {
     if(err) {
       res.status(500);
-      res.json({ message: 'Error deleting a song' });
+      res.json({ message: 'Error deleting songs' });
     }
     else
       res.json({ message: 'OK' });
   });
 });
+populateArtistsRoute.post(function(req, res) {
+  var tempArtist = assembleArtist(req.body);
+
+  Artist.create(tempArtist, function(err, artist) {
+    if (err) {
+      res.status(500);
+      res.json({ message: "Error creating artist." });
+    } else {
+      res.status(200);
+      res.json({ message: "Successful artist creation.", data: [artist] });
+    }
+  });
+});
+populateArtistsRoute.delete(function(req, res) {
+  Artist.remove({}, function(err) {
+    if(err) {
+      res.status(500);
+      res.json({ message: 'Error deleting artists' });
+    }
+    else
+      res.json({ message: 'OK' });
+  });
+});
+
 
 songRoute.get(function(req, res) {
   var query = Song.find();
@@ -214,20 +239,6 @@ artistRoute.get(function(req, res) {
     }
     else
       res.json({ message:'OK', data:artists });
-  });
-});
-
-artistRoute.post(function(req, res) {
-  var tempArtist = assembleArtist(req.body);
-
-  Artist.create(tempArtist, function(err, artist) {
-    if (err) {
-      res.status(500);
-      res.json({ message: "Error creating artist." });
-    } else {
-      res.status(200);
-      res.json({ message: "Successful artist creation.", data: [artist] });
-    }
   });
 });
 

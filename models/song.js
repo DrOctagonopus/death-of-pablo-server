@@ -7,8 +7,9 @@ var SongSchema = new mongoose.Schema({
   rank:       Number,
   score:      Number,
   rapDensity: Number,
-  rhymesPerVerse: Number,
-  vocabLevel: Number
+  rhymesPerVerse: [Number],
+  vocabLevel: Number,
+  rhymeDistribution: Number,
 });
 
 module.exports = mongoose.model('Song', SongSchema);

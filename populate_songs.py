@@ -17,6 +17,7 @@ def populate_songs():
   r = requests.get(BASE_URL + ARTISTS_URL)
   artists = json.loads(r.content)["data"]
   ids = [x["_id"] for x in artists]
+  print(ids);
 
   i = 0
   for root, dirs, files in os.walk("data", followlinks=True):
@@ -25,17 +26,20 @@ def populate_songs():
           with open(file_path) as f:
               lyrics = [x for x in f]
               rank, score = rank_score[i]
+              numVerses = random.randint(4, 8)
+              rhymesPerVerse = []
+              for j in range(numVerses):
+                  rhymesPerVerse.append(random.randint(0, 5))
               r = requests.post(BASE_URL + POPULATE_SONGS_URL,
-                               data={"title": file,
+                               data={"title": file[:file.index('.')],
                                      "lyrics": lyrics,
                                      "rank": rank,
                                      "score": score,
                                      "rapDensity": random.randint(0, 100),
-                                     "rhymesPerVerse": random.randrange(0, 50),
+                                     "rhymesPerVerse": rhymesPerVerse,
                                      "vocabLevel": random.randint(0, 12),
-                                     "artistIds": [random.choice(ids)]
+                                     "artistIds": [random.choice(ids)],
+                                     "rhymeDistribution": random.random()
                                      })
               i += 1
-
-
-
+  print('Done populating songs')

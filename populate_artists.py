@@ -34,7 +34,7 @@ DESCRIPTORS = [" who likes to talk.",
 
 BASE_URL             = "http://localhost:4000/api"
 POPULATE_SONGS_URL   = "/populate/songs"
-POPULATE_ARTISTS_URL = "/artists"
+POPULATE_ARTISTS_URL = "/populate/artists"
 
 def populate_artists():
   for artist in ARTISTS:
