@@ -21,7 +21,7 @@ var port = process.env.PORT || 4000;
 //Allow CORS so that backend and frontend could pe put on different servers
 var allowCrossDomain = function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
   res.header("Access-Control-Allow-Headers", "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept");
   next();
 };
@@ -107,7 +107,7 @@ function assembleArtist(artistParams) {
   return {
     "name": artistParams.name,
     "description": artistParams.description,
-    "songIds": artistParams.songIds.split(",")
+    "songIds": typeof(artistParams.songIds) !== "undefined" ? artistParams.songIds.split(",") : [] 
   };
 }
 
@@ -144,7 +144,7 @@ songRoute.post(function(req, res) {
         function(err, artist) {
           if (err) {
             res.status(500);
-            res.json({message: "Error updating artist."});
+            res.json({ message: "Error updating artist." });
           }
       });
 
@@ -164,7 +164,8 @@ populationSongRoute.post(function(req, res) {
     } else {
       // Have to update artist once song is added because a song belongs to an artist.
       var songId = song._id;
-      var artistIds = req.body.artistIds;
+      console.log(songId);
+      var artistIds = req.body.artistIds.split(",");
 
       Artist.update({ _id: { $in: artistIds } },
         { $addToSet: { "songIds": songId } },
@@ -172,7 +173,7 @@ populationSongRoute.post(function(req, res) {
         function(err, artist) {
           if (err) {
             res.status(500);
-            res.json({message: "Error updating artist."});
+            res.json({ message: "Error updating artist." });
           }
       });
 
