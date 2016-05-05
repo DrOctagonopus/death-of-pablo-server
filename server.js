@@ -219,19 +219,6 @@ songRoute.post(function(req, res) {
     }
   });
 });
-
-songRoute.delete(function(req, res) {
-  Song.findByIdAndRemove(req.params.userid, req.body,
-    function(err, song) {
-      if (err) {
-        res.status(500);
-        res.json({ message: "Error removing song." });
-      } else {
-        res.status(200);
-        res.json({ message: "Successful delete." });
-      }
-    })
-});
 songIdRoute.get(function(req, res) {
   var songId = req.params.id;
 
@@ -239,13 +226,16 @@ songIdRoute.get(function(req, res) {
     if (err) {
       res.status(500);
       res.json({ message: "Error finding song." });
-    } else {
+    } else if(song != null){
       res.status(200);
       res.json({ message: "Success finding song.", data: song });
     }
+    else {
+      res.status(404);
+      res.json({ message: 'Song not found.' });
+    }
   });
 });
-
 
 artistRoute.get(function(req, res) {
   var query = Artist.find();
