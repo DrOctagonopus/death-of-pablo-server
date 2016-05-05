@@ -36,8 +36,9 @@ BASE_URL             = "http://localhost:4000/api"
 POPULATE_SONGS_URL   = "/populate/songs"
 POPULATE_ARTISTS_URL = "/artists"
 
-for artist in ARTISTS:
-    r = requests.post(BASE_URL + POPULATE_ARTISTS_URL,
-                      data={"name": artist,
-                            "description": random.choice(DESCRIPTIONS) +
-                                         random.choice(DESCRIPTORS)})
+def populate_artists():
+  for artist in ARTISTS:
+      r = requests.post(BASE_URL + POPULATE_ARTISTS_URL,
+                        data={"name": artist,
+                              "description": random.choice(DESCRIPTIONS) +
+                                           random.choice(DESCRIPTORS)})

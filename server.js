@@ -110,21 +110,8 @@ function assembleArtist(artistParams) {
 }
 
 //Route methods
-songRoute.get(function(req, res) {
-  var query = Song.find();
-  setQuery(query, req.query);
-  query.exec(function(err, songs) {
-    if(err) {
-      res.status(500);
-      res.json({ message:'Error retrieving songs' });
-    }
-    else
-      res.json({ message:'OK', data:songs });
-  });
-});
-
-songRoute.post(function(req, res) {
-  var tempSong = assembleSong(req.body);
+populationSongRoute.post(function(req, res) {
+  var tempSong = req.body;
 
   Song.create(tempSong, function(err, song) {
     if(err) {
@@ -151,9 +138,32 @@ songRoute.post(function(req, res) {
     }
   });
 });
+populationSongRoute.delete(function(req, res) {
+  Song.remove({}, function(err) {
+    if(err) {
+      res.status(500);
+      res.json({ message: 'Error deleting a song' });
+    }
+    else
+      res.json({ message: 'OK' });
+  });
+});
 
-populationSongRoute.post(function(req, res) {
-  var tempSong = req.body;
+songRoute.get(function(req, res) {
+  var query = Song.find();
+  setQuery(query, req.query);
+  query.exec(function(err, songs) {
+    if(err) {
+      res.status(500);
+      res.json({ message:'Error retrieving songs' });
+    }
+    else
+      res.json({ message:'OK', data:songs });
+  });
+});
+
+songRoute.post(function(req, res) {
+  var tempSong = assembleSong(req.body);
 
   Song.create(tempSong, function(err, song) {
     if(err) {
