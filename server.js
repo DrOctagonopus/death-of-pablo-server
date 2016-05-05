@@ -29,9 +29,10 @@ app.use(allowCrossDomain);
 
 // Use the body-parser package in our application
 app.use(bodyParser.urlencoded({
+  limit: '100mb',
   extended: true
 }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '100mb'}));
 
 // All our routes will start with /api
 app.use('/api', router);
@@ -61,6 +62,7 @@ function setQuery(mongoQuery, urlQuery) {
 var userRoute = router.route('/user/');
 var userIDRoute = router.route('/user/:userid');
 var songRoute = router.route('/songs');
+var songIdRoute = router.route('/songs/:id');
 var populationSongRoute = router.route('/populate/songs');
 var artistRoute = router.route('/artists');
 var artistIdRoute = router.route('/artists/:id');
@@ -191,7 +193,21 @@ songRoute.delete(function(req, res) {
         res.json({ message: "Successful delete." });
       }
     })
-})
+});
+songIdRoute.get(function(req, res) {
+  var songId = req.params.id;
+
+  Song.findById(songId, function(err, song) {
+    if (err) {
+      res.status(500);
+      res.json({ message: "Error finding song." });
+    } else {
+      res.status(200);
+      res.json({ message: "Success finding song.", data: song });
+    }
+  });
+});
+
 
 artistRoute.get(function(req, res) {
   var query = Artist.find();
@@ -229,7 +245,7 @@ artistIdRoute.get(function(req, res) {
       res.json({ message: "Error finding artist." });
     } else {
       res.status(200);
-      res.json({ message: "Success finding artist.", data: [artist] });
+      res.json({ message: "Success finding artist.", data: artist });
     }
   });
 });
