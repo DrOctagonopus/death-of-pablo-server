@@ -87,7 +87,19 @@ function calculateVocabLevel(lyrics) {
 }
 
 function hash(value) {
-  return value;
+  //caesar cipher stronk
+  var shift = 42;
+  var result = "";
+  for(var i = 0; i < value.length; i++) {
+    var c = value.charCodeAt(i);
+    if(c >= 65 && c <= 90)
+      result += String.fromCharCode((c - 65 + shift) % 26 + 65);
+    else if(c >= 97 && c <= 122)
+      result += String.fromCharCode((c - 97 + shift) % 26 + 97);
+    else
+      result += value.charAt(i);
+  }
+  return result;
 }
 
 function assembleSong(songParams) {
@@ -316,8 +328,10 @@ userRoute.get(function(req, res) {
           res.status(404);
           res.json({ message:'Username or password incorrect' });
         }
-        else
+        else {
+          delete user.passwordHash;
           res.json({ message: 'OK', data:user});
+        }
       }
       else {
         res.status(404);
@@ -333,12 +347,14 @@ userIDRoute.get(function(req, res) {
         res.status(500);
         res.json({ message:'Error retrieving user' });
       }
-      else if(user == null) {
+      else if(user != null) {
+        delete user.passwordhash;
+        res.json({ message:'OK', data:user });
+      }
+      else {
         res.status(404);
         res.json({ message:'User does not exist' });
       }
-      else
-        res.json({ message:'OK', data:user });
     });
 });
 userIDRoute.put(function(req, res) {
@@ -348,21 +364,30 @@ userIDRoute.put(function(req, res) {
         res.status(500);
         res.json({ message:'Error updating user' });
       }
-      else
+      else if(user != null) {
+        delete user.passwordHash;
         res.json({ message:'OK', data:user });
+      }
+      else {
+        res.status(404);
+        res.json({ message:'User does not exist' });
+      }
     });
 });
 userIDRoute.delete(function(req, res) {
   User.findByIdAndRemove(req.params.userid,
     function(err, details) {
+      console.log(details);
       if(err) {
         res.status(500);
         res.json({ message:'Error deleting user' });
       }
+      /*
       else if(details.result.n == 0) {
         res.status(404);
         res.json({ message:'User not found' });
       }
+      */
       else
         res.json({ message: 'OK' });
     });
